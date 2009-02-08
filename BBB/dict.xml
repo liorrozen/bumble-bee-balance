@@ -1,0 +1,17 @@
+<dictionary>
+	<param><name>worldScale</name><value>20</value></param>
+
+	<param><name>platformLength</name><value>30</value></param>
+	<param><name>platformHeight</name><value>1</value></param>
+	<param><name>maxPlatformAngle</name><value>25</value></param>
+	<param><name>platformDensity</name><value>1</value></param>
+	<param><name>platformFriction</name><value>1000</value></param>
+	<param><name>platformRestitution</name><value>0</value></param>
+	
+	<param><name>playerWheelRadius</name><value>0.5</value></param>
+	<param><name>playerWheelFriction</name><value>0.01</value></param>
+	<param><name>playerWheelDistance</name><value>2.0</value></param>
+	<param><name>playerJumpFactor</name><value>0.8</value></param>
+	
+	<param><name>playerSpeed</name><value>5</value></param>
+</dictionary>
