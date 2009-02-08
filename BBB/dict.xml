@@ -7,6 +7,7 @@
 	<param><name>platformDensity</name><value>1</value></param>
 	<param><name>platformFriction</name><value>1000</value></param>
 	<param><name>platformRestitution</name><value>0</value></param>
+	<param><name>platformSensorRadius</name><value>3</value></param>
 	
 	<param><name>playerWheelRadius</name><value>0.5</value></param>
 	<param><name>playerWheelFriction</name><value>0.01</value></param>

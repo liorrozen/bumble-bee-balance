@@ -1,5 +1,6 @@
 package balance
 {
+	import Box2D.Collision.Shapes.b2CircleDef;
 	import Box2D.Collision.Shapes.b2PolygonDef;
 	import Box2D.Dynamics.Joints.b2Joint;
 	import Box2D.Dynamics.Joints.b2RevoluteJointDef;
@@ -53,8 +54,20 @@ package balance
 			stopper1Def.density = 0;
 			stopper1Def.restitution = 0;
 			stopper1Def.friction = 1000;
+			//stopper1Def.filter.groupIndex = -9;
+			// Add a sensor circle to stopper number 1 to determine
+			// platform touch in the stopper radius
+			var sens1:b2CircleDef = new b2CircleDef();
+			sens1.density = 0;
+			sens1.radius = Number(GameManager.dictionary.getParamByName('platformSensorRadius'));
+			sens1.isSensor = true;
+			sens1.filter.groupIndex = -9;
+			m_stopper1body.CreateShape(sens1);
 			m_stopper1body.CreateShape(stopper1Def);
 			m_stopper1body.SetMassFromShapes();
+			m_stopper1body.SetUserData(this);
+			
+
 			// Create stopper 2 to limit the seesaw
 			var stopper2bodyDef : b2BodyDef = new b2BodyDef();
 			stopper2bodyDef.position.x = x2;
@@ -64,10 +77,18 @@ package balance
 			stopper2Def.SetAsBox(0.1, 0.1);
 			stopper2Def.density = 0;
 			stopper2Def.friction = 1000;
+			//stopper2Def.filter.groupIndex = -9;
+			// Add a sensor circle to stopper number 1 to determine
+			// platform touch in the stopper radius
+			var sens2:b2CircleDef = new b2CircleDef();
+			sens2.density = 0;
+			sens2.radius = Number(GameManager.dictionary.getParamByName('platformSensorRadius'));
+			sens2.isSensor = true;
+			sens2.filter.groupIndex = -9;
+			m_stopper2body.CreateShape(sens2);
 			m_stopper2body.CreateShape(stopper2Def);
 			m_stopper2body.SetMassFromShapes();
-			
-			
+			m_stopper2body.SetUserData(this);
 			
 			var anchorBodyDef : b2BodyDef = new b2BodyDef();
 			anchorBodyDef.position.x = m_body.GetWorldCenter().x;

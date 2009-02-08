@@ -5,11 +5,13 @@ package balance
 
 	public class ContactListener extends b2ContactListener
 	{
-		public function ContactListener()
+		private var m_manager : GameManager;
+		
+		public function ContactListener(gm : GameManager)
 		{
+			m_manager = gm;
 			super();
 		}
-		
 		
 		/// Called when a contact point is added. This includes the geometry
 		/// and the forces.
@@ -22,10 +24,26 @@ package balance
 						Player(obj2).contactCount++
 					}
 					
+					if (obj1 is Platform && point.shape2.IsSensor())
+					{
+						if (!m_manager.sensorActive) {
+							m_manager.sensorActive = true;
+							m_manager.startCalculatingScore();
+						}
+					}
+					
 				} else if(obj2 is Platform || obj2 is Block) {
 					if(obj1 is Player) {
 						Player(obj1).contactCount++
 					}	
+					
+					if (obj2 is Platform && point.shape1.IsSensor())
+					{
+						if (!m_manager.sensorActive) {
+							m_manager.sensorActive = true;
+							m_manager.startCalculatingScore();
+						}
+					}
 				}
 			}
 		} 
@@ -48,12 +66,22 @@ package balance
 						}*/
 					}
 					
+					if (obj1 is Platform && point.shape2.IsSensor())
+					{
+						m_manager.stopCalculatingScore();
+					}
+					
 				} else if(obj2 is Platform || obj2 is Block) {
 					if(obj1 is Player) {
 						Player(obj1).contactCount--
 						/*if(Player(obj1).contactCount == 0) {
 							Player(obj1).isJumping = false;
 						}*/
+					}
+					
+					if (obj2 is Platform && point.shape1.IsSensor())
+					{
+						m_manager.stopCalculatingScore();
 					}
 				}
 			}
