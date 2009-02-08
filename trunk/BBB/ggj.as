@@ -26,9 +26,9 @@ package {
 			
 			var playerDef : Array = new Array()
 			playerDef.push({name:"player1",team:"1",type:"human",controlls:["left","right","up","down"]})
-			playerDef.push({name:"player2",team:"1",type:"human",controlls:["bF","bH","bT","bG"]})
-			playerDef.push({name:"player3",team:"2",type:"human",controlls:["bJ","bL","bI","bK"]})
-			playerDef.push({name:"player4",team:"2",type:"human",controlls:["bA","bD","bW","bS"]})
+			playerDef.push({name:"player2",team:"1",type:"human",controlls:["F","H","T","G"]})
+			playerDef.push({name:"player3",team:"2",type:"human",controlls:["J","L","I","K"]})
+			playerDef.push({name:"player4",team:"2",type:"human",controlls:["A","D","W","S"]})
 			var game : GameManager = new GameManager(playerDef);
 			addChild(game);
 		}
