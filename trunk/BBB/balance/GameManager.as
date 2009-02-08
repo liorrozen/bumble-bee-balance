@@ -12,8 +12,10 @@ package balance
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.TimerEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import flash.utils.Timer;
 	import flash.utils.setTimeout;
 
 	public class GameManager extends Sprite
@@ -22,6 +24,9 @@ package balance
 		
 		public static var dictionary : Dictionary;
 		
+		
+		private var testScoreTimer : Timer
+		public var sensorActive : Boolean = false;
 		public var ascii : Array;
 		public var powerUps : Array;
 		private var m_iterations:int = 50;
@@ -61,7 +66,7 @@ package balance
 			
 			initWorld();
 			initGameObjects();
-			//initDebugDraw();
+			initDebugDraw();
 			initStageGraphics();
 			
 			setTimeout(addBlock,Math.random()*1000);
@@ -134,7 +139,7 @@ package balance
 			var gravity:b2Vec2 = new b2Vec2(0, 35);
 			var doSleep:Boolean = true;
 			m_world = new b2World(worldAABB, gravity, doSleep);
-			m_world.SetContactListener(new ContactListener());
+			m_world.SetContactListener(new ContactListener(this));
 		}
 		
 		private function initGameObjects() : void
@@ -200,6 +205,29 @@ package balance
 			dbgText.x = 10; dbgText.y = 10;
 			dbgText.autoSize = TextFieldAutoSize.LEFT;
 			dbgSprite.addChild(dbgText);
+		}
+		
+		public function startCalculatingScore() : void {
+			testScoreTimer = new Timer(200,0);
+			testScoreTimer.addEventListener(TimerEvent.TIMER, function tick(e:Event):void {
+				if (sensorActive) {
+					if (m_platform.rotation < 0) {
+						dbgText.text = "RED SCORES: " + Math.random().toString();
+					} else {
+						dbgText.text = "BLUE SCORES: " + Math.random().toString();
+					}
+				}
+				else
+				{
+					testScoreTimer.stop();
+				}
+			});
+			testScoreTimer.start();
+		}
+		
+		public function stopCalculatingScore() : void {
+			testScoreTimer.stop();
+			sensorActive = false;
 		}
 		
 		public function Update(e:Event = null):void
