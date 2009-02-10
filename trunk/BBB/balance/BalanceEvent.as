@@ -4,7 +4,6 @@ package balance
 
 	public class BalanceEvent extends Event
 	{
-		
 		public static const SET_POWERUP : String = "set_powerup"
 		public static const SET_SCORE : String = "set_score"
 		
@@ -21,6 +20,5 @@ package balance
 			score = p_score
 			super(type, bubbles, cancelable);
 		}
-		
 	}
 }

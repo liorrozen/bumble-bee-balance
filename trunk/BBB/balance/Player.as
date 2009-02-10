@@ -135,17 +135,6 @@ package balance
 			m_joint2.SetMotorSpeed(n)
 		}
 		
-		public function get isTouching()
-		{
-			if (m_wheel1.m_contactList != null ||
-				m_wheel2.m_contactList != null) {
-				//if (m_carBody.m_contactList.contact.GetManifoldCount() != 0)
-					return true;
-			}
-			trace('null');
-			return false;
-		}
-		
 		public function jump():void {
 			// Get vector in the anti direction to gravity
 			var agvec : b2Vec2 = m_world.m_gravity.Negative();
@@ -250,7 +239,7 @@ package balance
 		}
 		
 		override protected function createGUI():void {	
-			m_gui = AssetManager.getInstance().getAssetByName(team==1?'car1_gui':'car2_gui');
+			m_gui = AssetManager.getInstance().getAssetByName(team==1 ? 'car1_gui':'car2_gui');
 			var scalePic : Number =
 				(3.2) * Number(GameManager.dictionary.getParamByName('worldScale')) / m_gui.width;
 			m_gui.scaleX = scalePic;
@@ -267,7 +256,10 @@ package balance
 			for(var i : uint = m_manager.powerUps.length-1 ; i > 0 ; --i) {
 				if(hitTestObject(m_manager.powerUps[i])) {
 					powerUp = m_manager.powerUps[i].type;
-					dispatchEvent(new BalanceEvent(BalanceEvent.SET_POWERUP,pname,team,powerUp,0))
+					
+					// Announce the UI that a power up change has occured
+					dispatchEvent(new BalanceEvent(BalanceEvent.SET_POWERUP,pname,team,powerUp,0,true));
+					
 					m_manager.powerUps[i].parent.removeChild(m_manager.powerUps[i])
 					m_manager.powerUps.splice(i,1)
 				}
