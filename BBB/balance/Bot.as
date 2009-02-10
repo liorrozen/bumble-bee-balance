@@ -56,9 +56,8 @@ package balance
 			// The closer you get to the edge the likely to continue you are.
 			if (((this.distance(platform.x, platform.y) / 
 				((15 * Number(GameManager.dictionary.getParamByName('worldScale'))) / 2))  <
-					1.1 + (Math.random() / 2)) ||
-				//Math.random() < 0.05)
-				Math.random() < 1)
+				1.1 + (Math.random() / 2)) ||
+				Math.random() < 0.05)
 			{
 				if(platform.rotation > (0 + (Math.random()/2 - 0.25) * 30))
 				{

@@ -139,17 +139,45 @@ package balance
 				Number(GameManager.dictionary.getParamByName('worldScale'));
 			m_goal1_gui.y = m_stopper1body.GetWorldCenter().y * 
 				Number(GameManager.dictionary.getParamByName('worldScale'));
+			m_goal1_gui.width =
+				Number(GameManager.dictionary.getParamByName('platformSensorRadius')) * 2 *
+				Number(GameManager.dictionary.getParamByName('worldScale'));
+			m_goal1_gui.height =
+				Number(GameManager.dictionary.getParamByName('platformSensorRadius')) * 2 *
+				Number(GameManager.dictionary.getParamByName('worldScale'));
+			m_goal1_gui.alpha = 0.3;
 			
 			m_goal2_gui = AssetManager.getInstance().getAssetByName('goal2_gui');
 			m_goal2_gui.x = m_stopper2body.GetWorldCenter().x *
 				Number(GameManager.dictionary.getParamByName('worldScale'));
 			m_goal2_gui.y = m_stopper2body.GetWorldCenter().y *
 				Number(GameManager.dictionary.getParamByName('worldScale'));
+			m_goal2_gui.width =
+				Number(GameManager.dictionary.getParamByName('platformSensorRadius')) * 2 *
+				Number(GameManager.dictionary.getParamByName('worldScale'));
+			m_goal2_gui.height =
+				Number(GameManager.dictionary.getParamByName('platformSensorRadius')) * 2 *
+				Number(GameManager.dictionary.getParamByName('worldScale'));
+			m_goal2_gui.alpha = 0.3;
 			
 			addEventListener(Event.ADDED, function _added(e : Event) {
 				parent.addChild(m_goal1_gui);
+				parent.setChildIndex(m_goal1_gui, parent.getChildIndex(m_gui.parent));
 				parent.addChild(m_goal2_gui);
+				parent.setChildIndex(m_goal2_gui, parent.getChildIndex(m_gui.parent));
 			});
+		}
+		
+		public function hideGoalMarkers() : void {
+			try {
+				parent.removeChild(m_goal1_gui);
+			} catch (er : Error)
+			{}
+			
+			try {
+				parent.removeChild(m_goal2_gui);
+			} catch (er:Error)
+			{}
 		}
 		
 		override public function get bodies() : Array {

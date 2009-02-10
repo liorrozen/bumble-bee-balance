@@ -32,8 +32,9 @@ package balance
 		public var sensorActive : Boolean = false;
 		public var ascii : Array;
 		public var powerUps : Array;
-		private var m_iterations:int = 50;
+		private var m_iterations:int = 20;
 		private var m_timeStep:Number = 1.0/30.0;
+		private var m_scoreForOnePoint = 50;
 		
 		private var m_world : b2World;
 		private var m_gameObjects : Array;
@@ -44,6 +45,7 @@ package balance
 		private var m_keyMap : Object;
 		private var powerUpsTimeout : uint;
 		private var blocksTimeout : uint;
+		public var m_doesWorldExist : Boolean = false;
 		
 		public function GameManager(playerDef : Array, _dictionary : Dictionary)
 		{
@@ -54,7 +56,7 @@ package balance
 			m_keyMap = new Object();
 			m_gameObjects = new Array();
 			m_players = new Array();
-			fillAscii()
+			fillAscii();
 		}
 		
 		public function startGame() : void {
@@ -65,7 +67,11 @@ package balance
 			blueScoreCounter = 0;
 			redScoreCounter = 0;
 			stage.focus = this; //key focus
-			initWorld();
+			
+			m_doesWorldExist = true;
+			if (m_world == null) {
+				initWorld();
+			}
 			initGameObjects();
 			initDebugDraw();
 			
@@ -74,6 +80,7 @@ package balance
 		}
 		
 		public function endGame() : void {
+			m_doesWorldExist = false;
 			clearTimeout(blocksTimeout);
 			clearTimeout(powerUpsTimeout);
 			removeEventListener(Event.ENTER_FRAME, Update);
@@ -81,9 +88,6 @@ package balance
 			stage.removeEventListener(KeyboardEvent.KEY_UP,keyUpHandler);
 			
 			destroyGameObjects();
-			
-			// Remove all object from the local game objects array
-			m_gameObjects.splice(0, m_gameObjects.length);
 			
 			// Dispatch an event to declare the winning team\
 			if (blueScoreCounter > redScoreCounter) {
@@ -138,15 +142,19 @@ package balance
 			powerUp.y = (Math.random()<0.5)?-(m_platformHeight/2+powerUp.height/2):-100;
 			powerUp.type = type;
 			powerUps.push(powerUp);
-			m_platform.addChild(powerUp)
+			if (m_platform != null)
+				m_platform.addChild(powerUp);
 			setTimeout(addPowerUp,Math.random()*10000+10000)
 		} 
 		
 		private function addBlock() : void {
-			var block : Block = new Block(m_world,new b2Vec2(Math.random()*30+5,15));
-			m_gameObjects.push(block);
-			addChild(block)
-			setTimeout(addBlock,Math.random()*10000+10000)
+			if (m_doesWorldExist)
+			{
+				var block : Block = new Block(m_world,new b2Vec2(Math.random()*30+5,15));
+				m_gameObjects.push(block);
+				addChild(block)
+				setTimeout(addBlock,Math.random()*10000+10000)
+			}
 		} 
 		
 		private function initWorld() : void 
@@ -171,6 +179,7 @@ package balance
 			m_platform = Platform(obj);
 			m_gameObjects.push(obj);
 			m_platformHeight = 20;
+			
 			for(var i : uint = 0 ; i < m_playerDef.length ; ++i) {
 				// If it is a human player
 				if (m_playerDef[i].type == "human")
@@ -204,6 +213,9 @@ package balance
 		}
 		
 		private function destroyGameObjects() : void {
+			// Hide the two goal markers
+			m_platform.hideGoalMarkers();
+			
 			// Remove all game objects from the stage
 			m_gameObjects.forEach(_removeDisplay)
 			function _removeDisplay(item : DisplayObject , ...prams) : void {
@@ -218,6 +230,11 @@ package balance
 					m_world.DestroyBody(body);						
 				});
 			}
+			
+			// Remove all object from the local game objects array
+			m_gameObjects.splice(0, m_gameObjects.length);
+			m_players.splice(1, m_players.length);
+			m_platform = null;
 			
 			// Remove all power ups
 			for(var i : uint = powerUps.length-1 ; i > 0 ; --i) {
@@ -236,7 +253,7 @@ package balance
 			dbgDraw.m_lineThickness = 1.0;
 			dbgDraw.AppendFlags(b2DebugDraw.e_shapeBit)
 			//dbgDraw.AppendFlags(b2DebugDraw.e_shapeBit)
-			m_world.SetDebugDraw(dbgDraw);
+			//m_world.SetDebugDraw(dbgDraw);
 			
 			dbgText = new TextField();
 			dbgText.x = 10; dbgText.y = 10;
@@ -251,9 +268,31 @@ package balance
 					if (m_platform.rotation < 0) {
 						redScoreCounter++;
 						dbgText.text = "RED SCORES: " + redScoreCounter;
+						var scoreEvent : BalanceEvent =
+							new BalanceEvent(BalanceEvent.SET_SCORE,null,2,null,
+							Math.floor(Number(redScoreCounter) / m_scoreForOnePoint * 100),
+							true);
+						dispatchEvent(scoreEvent);
+						
+						if (redScoreCounter == m_scoreForOnePoint) {
+							testScoreTimer.stop();
+							var endGameEvent:GameEvent = new GameEvent(GameEvent.RED_TEAM_WIN, null, true);
+							dispatchEvent(endGameEvent);
+						}
 					} else {
 						blueScoreCounter++;
 						dbgText.text = "BLUE SCORES: " + blueScoreCounter;
+						var scoreEvent : BalanceEvent =
+							new BalanceEvent(BalanceEvent.SET_SCORE,null,1,null,
+							Math.floor(Number(blueScoreCounter) / m_scoreForOnePoint * 100),
+							true);
+						dispatchEvent(scoreEvent);
+						
+						if (blueScoreCounter == m_scoreForOnePoint) {
+							testScoreTimer.stop();
+							var endGameEvent:GameEvent = new GameEvent(GameEvent.BLUE_TEAM_WIN, null, true);
+							dispatchEvent(endGameEvent);
+						}
 					}
 				}
 				else

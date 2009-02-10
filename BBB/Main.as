@@ -3,6 +3,7 @@ package {
 	import as3.AsyncVar;
 	import as3.ResourceLoader;
 	
+	import balance.BalanceEvent;
 	import balance.Dictionary;
 	import balance.GameEvent;
 	import balance.GameManager;
@@ -77,6 +78,15 @@ package {
 				m_timer.start()
 				m_gui.addChild(m_gameManager);
 				m_gameManager.startGame();
+				
+				// Score is set to 0
+				m_gui.gamePlay_mc.blue_bar.maskMC.gotoAndStop(0);
+				m_gui.gamePlay_mc.red_bar.maskMC.gotoAndStop(0);
+				
+				// Add Event listeners for internal game events
+				addEventListener(BalanceEvent.SET_SCORE, _handleScoreChange);
+				addEventListener(BalanceEvent.SET_POWERUP, _handlePowerUPChange);
+				
 				addEventListener(GameEvent.GAME_OVER,_gameOverHandler);
 				function _gameOverHandler(e:GameEvent):void{
 					if (e.type == GameEvent.RED_TEAM_WIN){
@@ -165,7 +175,7 @@ package {
 		private function gameTickHandler(e:TimerEvent):void{
 			var mins :uint = Math.floor(m_timer.currentCount / 60);
 			var secs :uint = (m_timer.currentCount < 60)?m_timer.currentCount:m_timer.currentCount-(60*mins)
-			if (mins > 0 && secs > 29){
+			if (mins > 1 && secs > 29){
 				endofGame();
 			}
 			else
@@ -181,6 +191,17 @@ package {
 			m_gameManager.endGame();
 			m_timer.stop();
 			m_timer.reset();	
+		}
+		
+		private function _handlePowerUPChange(e:BalanceEvent) :void {
+		}
+		
+		private function _handleScoreChange(e:BalanceEvent) :void {
+			if (e.team == 1) {
+				m_gui.gamePlay_mc.blue_bar.maskMC.gotoAndStop(e.score);
+			} else {
+				m_gui.gamePlay_mc.red_bar.maskMC.gotoAndStop(e.score);
+			}
 		}
 	}
 }
