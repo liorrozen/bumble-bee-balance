@@ -26,7 +26,7 @@ package as3{
 			urlloader.contentLoaderInfo.addEventListener(Event.COMPLETE,_complete);
 			urlloader.load(urlRequest);
 			function _complete(e:Event):void{
-				async.data = e.currentTarget;
+				async.data = e.currentTarget.loader;
 				urlloader.contentLoaderInfo.removeEventListener(Event.COMPLETE,_complete);
 			}
 			return async;
