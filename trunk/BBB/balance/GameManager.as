@@ -16,6 +16,7 @@ package balance
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.utils.Timer;
+	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 
 	public class GameManager extends Sprite
@@ -24,7 +25,9 @@ package balance
 		
 		public static var dictionary : Dictionary;
 		
-		
+
+		private var blueScoreCounter : int = 0;		
+		private var redScoreCounter : int = 0;
 		private var testScoreTimer : Timer
 		public var sensorActive : Boolean = false;
 		public var ascii : Array;
@@ -39,38 +42,59 @@ package balance
 		private var m_platformHeight : Number;
 		private var m_playerDef : Array;
 		private var m_keyMap : Object;
+		private var powerUpsTimeout : uint;
+		private var blocksTimeout : uint;
 		
-		public function GameManager(playerDef : Array = null)
+		public function GameManager(playerDef : Array, _dictionary : Dictionary)
 		{
+			dictionary = _dictionary; 
 			m_playerDef = playerDef
 			powerUps = new Array();
 			powerUps[0] = "bla"; //this solves a really odd bug
 			m_keyMap = new Object();
 			m_gameObjects = new Array();
 			m_players = new Array();
-			addEventListener(Event.ADDED_TO_STAGE, addedHandler)
 			fillAscii()
 		}
 		
-		private function addedHandler(e : Event) : void {
-			// Load all parameters into dictionary
-			dictionary = new Dictionary('dict.xml');
-			dictionary.loader.addEventListener(Event.COMPLETE, continueGameLoading);
-		}
-		
-		private function continueGameLoading(e:Event) : void {
-			stage.focus = this; //key focus
+		public function startGame() : void {
 			addEventListener(Event.ENTER_FRAME, Update);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN,keyDownHandler);
 			stage.addEventListener(KeyboardEvent.KEY_UP,keyUpHandler);
 			
+			blueScoreCounter = 0;
+			redScoreCounter = 0;
+			stage.focus = this; //key focus
 			initWorld();
 			initGameObjects();
 			initDebugDraw();
-			initStageGraphics();
 			
-			setTimeout(addBlock,Math.random()*1000);
-			setTimeout(addPowerUp,Math.random()*1000);			
+			blocksTimeout = setTimeout(addBlock,Math.random()*1000);
+			powerUpsTimeout = setTimeout(addPowerUp,Math.random()*1000);	
+		}
+		
+		public function endGame() : void {
+			clearTimeout(blocksTimeout);
+			clearTimeout(powerUpsTimeout);
+			removeEventListener(Event.ENTER_FRAME, Update);
+			stage.removeEventListener(KeyboardEvent.KEY_DOWN,keyDownHandler);
+			stage.removeEventListener(KeyboardEvent.KEY_UP,keyUpHandler);
+			
+			destroyGameObjects();
+			
+			// Remove all object from the local game objects array
+			m_gameObjects.splice(0, m_gameObjects.length);
+			
+			// Dispatch an event to declare the winning team\
+			if (blueScoreCounter > redScoreCounter) {
+				var e:GameEvent = new GameEvent(GameEvent.BLUE_TEAM_WIN, null);
+			} else if (blueScoreCounter < redScoreCounter) {
+				var e:GameEvent = new GameEvent(GameEvent.RED_TEAM_WIN, null);
+			} else {
+				var e:GameEvent = new GameEvent(GameEvent.GAME_OVER, null);	
+			}
+			
+			dispatchEvent(e);
 		}
 		
 		public function get players():Array {
@@ -107,10 +131,8 @@ package balance
 			}
 			var powerUp : MovieClip = new MovieClip();
 			
-			powerUp.graphics.lineStyle(2);
-			powerUp.graphics.beginFill(color)
-			powerUp.graphics.drawRect(-15,-15,30,30);
-			powerUp.graphics.endFill();
+			var powerUp : MovieClip = AssetManager.getInstance().getAssetByName("powerUpIcons_gui");
+            powerUp.gotoAndStop(type);
 			
 			powerUp.x = Math.random()*600-300;
 			powerUp.y = (Math.random()<0.5)?-(m_platformHeight/2+powerUp.height/2):-100;
@@ -165,8 +187,7 @@ package balance
 								 m_playerDef[i].name,
 								 m_playerDef[i].controlls);
 				}
-				
-								 	   
+							 	   
 				m_gameObjects.push(obj);
 				m_players.push(obj);
 				//trace(m_playerDef[i].controlls)
@@ -182,12 +203,28 @@ package balance
 			}
 		}
 		
-		private function initStageGraphics():void {
-			var tmpMC : MovieClip = AssetManager.getInstance().getAssetByName('clouds_gui');
-			tmpMC.x = this.width / 2;
-			tmpMC.y = this.height * 0.15;
-			addChild(tmpMC);
-		} 
+		private function destroyGameObjects() : void {
+			// Remove all game objects from the stage
+			m_gameObjects.forEach(_removeDisplay)
+			function _removeDisplay(item : DisplayObject , ...prams) : void {
+				removeChild(item);
+			}
+			
+			// Remove them all also from the world
+			m_gameObjects.forEach(_removeWorld)
+			function _removeWorld(obj : GameObject, ...prams) : void {
+				// Also remove from the world
+				obj.bodies.forEach(function removeLoop(body:*, ...params){
+					m_world.DestroyBody(body);						
+				});
+			}
+			
+			// Remove all power ups
+			for(var i : uint = powerUps.length-1 ; i > 0 ; --i) {
+				powerUps[i].parent.removeChild(powerUps[i]);
+				powerUps.splice(i,1);
+			}
+		}
 		
 		private function initDebugDraw() : void {
 			var dbgDraw:b2DebugDraw = new b2DebugDraw();
@@ -212,9 +249,11 @@ package balance
 			testScoreTimer.addEventListener(TimerEvent.TIMER, function tick(e:Event):void {
 				if (sensorActive) {
 					if (m_platform.rotation < 0) {
-						dbgText.text = "RED SCORES: " + Math.random().toString();
+						redScoreCounter++;
+						dbgText.text = "RED SCORES: " + redScoreCounter;
 					} else {
-						dbgText.text = "BLUE SCORES: " + Math.random().toString();
+						blueScoreCounter++;
+						dbgText.text = "BLUE SCORES: " + blueScoreCounter;
 					}
 				}
 				else

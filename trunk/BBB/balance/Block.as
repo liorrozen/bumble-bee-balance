@@ -13,11 +13,10 @@ package balance
 	{
 		public function Block(world:b2World, position : b2Vec2)
 		{
-			super(world);
 			var Def : b2BodyDef = new b2BodyDef();
 			Def.position.x = position.x;
 			Def.position.y = position.y;
-			m_body = m_world.CreateBody(Def);
+			super(world, Def);
 			var ShapeDef : b2PolygonDef = new b2PolygonDef();
 			ShapeDef.SetAsBox(2/2,2/2);
 			ShapeDef.density = 1;
@@ -25,7 +24,6 @@ package balance
 			ShapeDef.friction = 0.001;
 			m_body.CreateShape(ShapeDef);
 			m_body.SetMassFromShapes();
-			m_body.SetUserData(this)
 			createGUI()
 		}
 		
