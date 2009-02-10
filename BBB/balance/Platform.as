@@ -151,5 +151,12 @@ package balance
 				parent.addChild(m_goal2_gui);
 			});
 		}
+		
+		override public function get bodies() : Array {
+			var tmpbArr : Array = super.bodies;
+			tmpbArr.push(m_stopper1body);
+			tmpbArr.push(m_stopper2body);
+			return tmpbArr;
+		}
 	}
 }

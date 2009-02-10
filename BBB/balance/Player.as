@@ -155,7 +155,7 @@ package balance
 			perpvec.CrossFV(1);
 			perpvec.Normalize();
 			
-			// Get cos(angle) of current velocity vector anf perp. vector
+			// Get cos(angle) of current velocity vector and perp. vector
 			m_carBody.GetLinearVelocity().Normalize();
 			var cosAlpha : Number =
 				b2Math.b2Dot(m_carBody.GetLinearVelocity(), perpvec);
