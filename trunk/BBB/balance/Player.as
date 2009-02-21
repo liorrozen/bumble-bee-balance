@@ -34,9 +34,11 @@ package balance
 		public var contactCount : int = 0;
 		public var powerUp : String;
 		
-		public function Player(world:b2World, position : b2Vec2,
-							   manager : GameManager,
-							   p_team : uint, p_name : String)
+		public function Player( world:b2World,
+					position : b2Vec2,
+					manager : GameManager,
+					p_team : uint,
+					p_name : String )
 		{
 			super(world);
 			pname = p_name

@@ -194,7 +194,8 @@ package balance
 					obj = new Bot(m_world, new b2Vec2(13+((27-13)/m_playerDef.length)*i,5),this,
 								 m_playerDef[i].team,
 								 m_playerDef[i].name,
-								 m_playerDef[i].controlls);
+								 m_playerDef[i].controlls,
+								 dictionary.getParamByName(m_playerDef[i].name + 'PlayMode'));
 				}
 							 	   
 				m_gameObjects.push(obj);
@@ -320,7 +321,7 @@ package balance
 				//respawn frozen players
 				if(obj.isFrozen) {
 					if (obj is Bot) {
-						var brespawn : Bot = new Bot(m_world,Bot(obj).spawn_point,this,Bot(obj).team,Bot(obj).pname, Bot(obj).controlsKeys);
+						var brespawn : Bot = new Bot(m_world,Bot(obj).spawn_point,this,Bot(obj).team,Bot(obj).pname, Bot(obj).controlsKeys, Bot(obj).playMode.toString());
 						m_gameObjects.splice(m_gameObjects.indexOf(obj),1,brespawn)
 						m_players.splice(m_players.indexOf(obj),1,brespawn)
 						addChild(brespawn)
@@ -350,7 +351,7 @@ package balance
 				// If it's a bot - let him perform a move
 				if (obj is Bot)
 				{
-					Bot(obj).doMove();
+					Bot(obj).doMove(m_gameObjects, powerUps);
 				}
 			}	
 		}

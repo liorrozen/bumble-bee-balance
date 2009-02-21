@@ -14,6 +14,13 @@ package balance
 		protected var m_shape : b2Shape;
 		protected var m_gui : MovieClip;
 		
+		public function get BodyX() : Number{
+			return m_body.GetPosition().x;
+		}
+		public function get BodyRotation() : Number{
+			return m_body.GetAngle() * (180/Math.PI);
+		}
+		
 		public function GameObject(world : b2World, bodyDef : b2BodyDef = null)
 		{
 			m_world = world

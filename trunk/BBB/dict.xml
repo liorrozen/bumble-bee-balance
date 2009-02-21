@@ -15,4 +15,11 @@
 	<param><name>playerJumpFactor</name><value>0.8</value></param>
 	
 	<param><name>playerSpeed</name><value>5</value></param>
+	
+	<param><name>player1PlayMode</name><value>0</value></param>
+	<param><name>player2PlayMode</name><value>0</value></param>
+	<param><name>player3PlayMode</name><value>0</value></param>
+	<param><name>player4PlayMode</name><value>0</value></param>
+	
+	<param><name>playModeFactor</name><value>5</value></param>
 </dictionary>
