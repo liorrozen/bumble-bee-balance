@@ -176,16 +176,16 @@ package balance
 		
 		public function usePowerUp():void {
 			switch(powerUp) {
-				case "weight++":
+				case "weight--":
 					m_carBody.GetShapeList().m_density = 2;
 					m_carBody.SetMassFromShapes();
 				break;
-				case "weight--":
+				case "weight++":
 					m_carBody.GetShapeList().m_density = 0.5;
 					m_carBody.SetMassFromShapes();
 				break;
 				case "speed++":
-					m_speedMod = 1.5
+					m_speedMod = 4.5;
 				break;
 				case "pull":
 					runPull();
@@ -195,6 +195,8 @@ package balance
 				break;
 			}
 			powerUp = "";
+			// Announce the UI that a power up change has occured
+			dispatchEvent(new BalanceEvent(BalanceEvent.SET_POWERUP,pname,team,"none",0,true));
 		}
 		
 		private function runPush() : void {
