@@ -79,6 +79,14 @@ package {
 				m_gui.addChild(m_gameManager);
 				m_gameManager.startGame();
 				
+				// No powerups for any player
+				m_gui.gamePlay_mc.blue0box.currPowerUp.gotoAndStop('none');
+				m_gui.gamePlay_mc.blue1box.currPowerUp.gotoAndStop('none');
+				m_gui.gamePlay_mc.blue2box.currPowerUp.gotoAndStop('none');
+				m_gui.gamePlay_mc.red0box.currPowerUp.gotoAndStop('none');
+				m_gui.gamePlay_mc.red1box.currPowerUp.gotoAndStop('none');
+				m_gui.gamePlay_mc.red2box.currPowerUp.gotoAndStop('none');
+				
 				// Score is set to 0
 				m_gui.gamePlay_mc.blue_bar.maskMC.gotoAndStop(0);
 				m_gui.gamePlay_mc.red_bar.maskMC.gotoAndStop(0);
@@ -130,18 +138,18 @@ package {
 				for (var i:uint = 0;i< players.length;i++){
 					if (players[i].checkBox.selected == true){ 
 						numPlayers++;
-						if (players[i].comboBox.selectedIndex == 0){//Conditional - No control scheme selected for active player
+						if (players[i].comboBox.selectedIndex == 3){//Conditional - No control scheme selected for active player
 							return false;
 						}
 						else{
 							if (players[i].comboBox.selectedItem.label != "Computer"){
 								var controlArr = new Array(players[i].comboBox.selectedItem.data)
 								var paramArr :Array = controlArr[0].split(",");
-								m_gameParams.push({name:players[i].nameTxt.text,team:p_team,type:"human",controlls:paramArr})
+								m_gameParams.push({name:i.toString(),team:p_team,type:"human",controlls:paramArr})
 							}
 							else{
 								m_gameParams.push(
-								{name:"Bot" + i,
+								{name:i.toString(),
 								 team:p_team,
 								 type:"bot",
 								 // Make sure no bot gets the same keys as anothr bot
@@ -175,7 +183,7 @@ package {
 		private function gameTickHandler(e:TimerEvent):void{
 			var mins :uint = Math.floor(m_timer.currentCount / 60);
 			var secs :uint = (m_timer.currentCount < 60)?m_timer.currentCount:m_timer.currentCount-(60*mins)
-			if (mins > 1 && secs > 29){
+			if (mins > 20 && secs > 29){
 				endofGame();
 			}
 			else
@@ -194,6 +202,11 @@ package {
 		}
 		
 		private function _handlePowerUPChange(e:BalanceEvent) :void {
+			var teamColor = e.team==1 ? 'blue' : 'red';
+			var playerNo = e.player;
+			var powerUp = e.powerup;
+			
+			m_gui.gamePlay_mc[teamColor + playerNo + 'box'].currPowerUp.gotoAndStop(powerUp);
 		}
 		
 		private function _handleScoreChange(e:BalanceEvent) :void {

@@ -165,7 +165,7 @@ package balance
 			var rotation : Number = 0;	//will use either m_rotation or m_mostPositiveBlockRotation
 			if(m_mostPositiveBlockRotation != 0){
 				rotation = m_mostPositiveBlockRotation;
-				trace("use block rotation: " + m_mostPositiveBlockRotation + " my rotation: " + m_rotation);
+				//trace("use block rotation: " + m_mostPositiveBlockRotation + " my rotation: " + m_rotation);
 			}
 			else{
 				rotation = m_rotation;
@@ -173,7 +173,7 @@ package balance
 			
 			if(this.distance(platform.x, platform.y) / Number(15 * Number(GameManager.dictionary.getParamByName('worldScale')) - Math.abs(rotation)) > 0.955){
 				isOnEdge = true;
-				trace("edge");
+				//trace("edge");
 				
 				if(m_location.x / m_direction > 0)	whichEdge = KEY_RIGHT_IDX;
 				else								whichEdge = KEY_LEFT_IDX;
@@ -183,7 +183,7 @@ package balance
 			var moveDirection : uint = m_directionKey;
 			
 			decision += decideBlocks(playModeFactor);	//understand block location
-			trace("decision: " + decision);
+			//trace("decision: " + decision);
 			
 			//TODO: decidePowerups
 			
@@ -199,10 +199,10 @@ package balance
 			prevMove = currMove;
 			if(!beStill && !(isOnEdge && moveDirection == whichEdge)){
 				m_manager.preformKeydown(currMove);
-				trace("moving " + moveDirection);
+				//trace("moving " + moveDirection);
 			}
 			else{
-				trace("not moving");
+				//trace("not moving");
 			}
 		}
 	}

@@ -328,7 +328,7 @@ package balance
 					}
 					else if(obj is Player)
 					{
-						dispatchEvent(new BalanceEvent(BalanceEvent.SET_POWERUP,Player(obj).pname,Player(obj).team,"none",0))
+						dispatchEvent(new BalanceEvent(BalanceEvent.SET_POWERUP,Player(obj).pname,Player(obj).team,"none",0,true));
 						var prespawn : Player = new Player(m_world,Player(obj).spawn_point,this,Player(obj).team,Player(obj).pname)
 						m_gameObjects.splice(m_gameObjects.indexOf(obj),1,prespawn)
 						m_players.splice(m_players.indexOf(obj),1,prespawn)
